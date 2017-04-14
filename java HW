@@ -1,0 +1,344 @@
+/**
+ * @author 1500062802
+ */
+import java.util.Scanner;
+import java.util.Vector;
+
+class KB  
+{  
+    static Scanner scan = new Scanner(System.in);  
+    static int scanInt()  
+    {   
+        return scan.nextInt();  
+    }  
+    static String scanString()  
+    {   
+        return scan.next();  
+    }  
+    static Double scanDouble()  
+    {   
+        return scan.nextDouble();  
+    } 
+}    
+//账户类
+class Cust 
+{  
+    String name;     //用户名
+    int ID;  		 //账号
+    int password;    //密码
+    double money;    //余额
+    String bankName; //银行
+    //构造函数
+    Cust(String name,int ID,int password,double money, String bankName)  
+    {   
+        this.name = name;   
+        this.ID = ID;   
+        this.password = password;   
+        this.money = money;  
+        this.bankName = bankName;
+    }
+    //检查密码
+    public boolean checkPWD()  
+    {   
+        System.out.println("请输入您的密码");   
+        for (int i = 0 ; i < 3 ; i++ )  
+        {   
+            int password = KB.scan.nextInt();    
+            if (password != this.password)    
+            {     
+                if (i != 2)     
+                {      
+                    System.out.println("密码错误，请重新输入");     
+                }    
+            }    
+            else   
+            { 
+                return true;    
+            }  
+        }   
+        return false;  
+    }
+    //转账
+    void zhuanZhang(Admin c)  
+    {   
+        System.out.println("请输入转账的账号");   
+        int ID = KB.scan.nextInt();   
+        int i = 0 ;   
+        for (i = 0 ; i < c.v.size() ; i++ )   
+        {   
+        	Cust temp =  (Cust)c.v.get(i);
+        	if (ID == temp.ID)    
+             {     
+                 System.out.println("请输入要转账的金额");     
+                 int money = KB.scan.nextInt();     
+                 if (money>=0)     
+                 {      
+                     if (this.getM(money))     
+                    {       
+                        temp.saveM(money);      
+                    }     
+                }     
+                else     
+                {      
+                    if (temp.checkPWD())      
+                    {       
+                        if (temp.getM(-money))       
+                        {        
+                            this.saveM(-money);       
+                        }      
+                    }      
+                    else      
+                    {       
+                        System.out.println("密码错误，不能反转账");      
+                    }     
+                }     
+                break;    
+            } 
+        }   
+        if (i == c.v.size())   
+        {    
+            System.out.println("用户不存在");   
+        }  
+    }
+    //取钱
+    boolean getM(int n)  
+    {   
+        if (n>money)  
+        {    
+            System.out.println("不能透支");    
+            return false;   
+        }   
+        money -= n;   
+        return true; 
+    }
+    //存钱
+    void saveM(int n)  
+    {   
+        this.money += n;  
+    } 
+    void print()  
+    {   
+        System.out.println("name:\t"+this.name);   
+        System.out.println("ID:\t"+this.ID);   
+        System.out.println("money:\t"+this.money);   
+        System.out.println("bankName:\t"+this.bankName); 
+    }  
+    void run(Admin c)  
+    {   
+        if (this.checkPWD() == false)   
+        {    
+            System.out.println("密码错误超过3次");    
+            return;   
+        }   
+        boolean flag = true;   
+        while (flag)   
+        {    
+            printMenu();    
+            int cmd = KB.scan.nextInt(); 
+            switch (cmd)    
+            {    
+                case 1:     
+                {      
+                    System.out.println("请输入取款金额");      
+                    int n1 = KB.scan.nextInt();      
+                    this.getM(n1);     
+                }break;    
+                case 2:     
+                {      
+                    System.out.println("请输入存款金额");      
+                    int n = KB.scan.nextInt();      
+                    this.saveM(n);     
+                }break;    
+                case 3:     
+                {      
+                    this.print();     
+                }break;    
+                case 4:     
+                {      
+                    this.zhuanZhang(c);     
+                }break;    
+                case 0:     
+                {      
+                    flag = false;     
+                }break;    
+            }   
+        }  
+    }  
+    static void printMenu()  
+    {   
+        System.out.println("*****************");   
+        System.out.println("**取款\t1**");   
+        System.out.println("**存款\t2**");   
+        System.out.println("**查询\t3**");   
+        System.out.println("**转账\t4**");   
+        System.out.println("**退出\t0**"); 
+        System.out.println("*****************");  
+    } 
+} 
+//银行类
+class Admin  
+{  
+    Vector v;   
+    Admin()  
+    {   
+        v = new Vector();   
+        v.add(new Cust("小明",111,111,1000, "建设银行"));   
+        v.add(new Cust("小红",222,222,2000, "工商银行"));   
+        v.add(new Cust("小刚",333,333,3000, "农业银行"));   
+        v.add(new Cust("小强",444,444,4000, "商业银行"));  
+    } 
+    //开账户
+    void add()  
+    {   
+        System.out.println("请输入姓名");   
+        String name = KB.scanString();   
+        System.out.println("请输入账号");   
+        int ID = KB.scanInt();   
+        System.out.println("请输入密码");   
+        int password = KB.scanInt(); 
+        System.out.println("请输入开户金额");   
+        double money = KB.scanDouble();    
+        System.out.println("请输入开户银行");   
+        String bankName = KB.scanString();
+        Cust temp = new Cust(name,ID,password,money, bankName);   
+        v.add(temp);  
+    } 
+    //删账户
+    void delete() {
+    	System.out.println("请输入要删除顾客的姓名");   
+        String name = KB.scanString();   
+        System.out.println("请输入要删除顾客的账号");   
+        int ID = KB.scanInt();   
+        System.out.println("请输入要删除顾客的密码");   
+        int password = KB.scanInt(); 
+		   
+        int i = 0 ;   
+        for (i = 0 ; i < v.size() ; i++ )   
+        {    
+            Cust temp = (Cust)v.get(i);    
+            if (temp.ID == ID && temp.name.equals(name) && temp.password == password)    
+            {     
+                v.remove(i);    
+                break;    
+            }   
+        }   
+        if (i == v.size())   
+        {    
+            System.out.println("没有该顾客");   
+        }  
+	}
+    //查账户
+    void print()  
+    {   
+        System.out.println("请输入要查询顾客的账号");   
+        int ID = KB.scanInt();   
+        int i = 0 ;   
+        for (i = 0 ; i < v.size() ; i++ )   
+        {    
+            Cust temp = (Cust)v.get(i);    
+            if (temp.ID == ID)    
+            {     
+                temp.print();     
+                break;    
+            }   
+        }   
+        if (i == v.size())   
+        {    
+            System.out.println("没有该顾客");   
+        }  
+    }
+    //显示所有账户
+    void printAll()  
+    {   
+        for (int i = 0 ; i < v.size() ; i++ )   
+        {    
+            Cust temp = (Cust)v.get(i);    
+            temp.print();   
+        }  
+    }  
+    void run()  
+    {   
+        boolean flag = true;   
+        while (flag)   
+        {    
+            System.out.println("*****************"); 
+            System.out.println("**添加顾客\t1**");    
+            System.out.println("**删除顾客\t2**");    
+            System.out.println("**查询顾客\t3**");    
+            System.out.println("**打印清单\t4**");    
+            System.out.println("**退出\t0**");    
+            System.out.println("*****************");    
+            int cmd = KB.scan.nextInt();     
+            switch (cmd)    
+            {    
+                case 1:     
+                {      
+                    this.add();     
+                }break;    
+                case 2:     
+                {      
+                    this.delete();     
+                }break;    
+                case 3:    
+                {      
+                    this.print();     
+                }break;    
+                case 4:     
+                {      
+                    this.printAll();     
+                }break;    
+                case 0:     
+                {      
+                    flag = false;//return;//System.exit(1);     
+                }break;    
+            }   
+        }  
+    }
+} 
+
+class Testweek7  
+{  
+    public static void main(String[] args)   
+    {   
+        Admin a = new Admin(); 	//创建银行
+        while (true)  
+        {   
+            System.out.println("*******************");    
+            System.out.println("**管理员\t1**");    
+            System.out.println("**用户\t\t2**");    
+            System.out.println("**退出\t\t3**");    
+            System.out.println("*******************");    
+            int c = KB.scanInt();    
+            switch (c)    
+            {   
+                 case 1:     
+                 {      
+                     a.run();     
+                }break;    
+                case 2:     
+                {      
+                    System.out.println("请输入您的账号");      
+                    int ID = KB.scanInt();     
+                    int i = 0 ;    
+                    for (i = 0 ; i < a.v.size() ; i++ )      
+                    {       
+                        Cust temp = (Cust)a.v.get(i);       
+                        if (ID == temp.ID)      
+                        {       
+                            temp.run(a);        
+                            break;       
+                        }      
+                    }      
+                    if (i == a.v.size())      
+                    {       
+                        System.out.println("用户不存在");      
+                    } 
+                    System.out.println("欢迎下次光临");     
+                }break;    
+                case 3:     
+                return;   
+            }   
+        }  
+    } 
+} 
+         
